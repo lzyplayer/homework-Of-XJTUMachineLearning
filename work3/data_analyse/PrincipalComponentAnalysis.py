@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 # @Time     : 2018/10/10 9:47
 # @Author   : vickylzy
-from sklearn.decomposition import PCA
-from readDataClass import read_data_class
 import numpy as np
 
 
@@ -11,31 +9,25 @@ def normalized(msg):
     return dataNormed
 
 
-# if __name__ == '__main__':
-msgReceived = read_data_class('./data_analyse/data_class1.txt')  # ./data_analyse
-component = 2
-selected = range(-component, 0)
-print(selected)
-# delete
-msgReceived = np.array([[1, -1, 2],
-                        [2, 0, 0],
-                        [0, 1, -1]])
+def pri_com_ana(msg_received, keep):
+    component = keep
+    selected = range(-component, 0)
 
-# PCA by sklearn
-pca = PCA(n_components=2)
-fitResult = pca.fit_transform(msgReceived)
-fitResult = np.array(fitResult, dtype=np.float16)
-print(fitResult)
+    # normalized
+    msgNormalized = normalized(msg_received)
+    # Covariance matrix
+    covMatrix = np.cov(msgNormalized.T)
+    print(covMatrix)
+    # 提取前n个特征值特征向量
+    eigVal, eigVector = np.linalg.eig(covMatrix)
+    sortList = np.argsort(eigVal)
+    print(sortList[selected])
+    selectedVector = eigVector[:, sortList[selected]]
+    # 产生主成分结果
+    return np.dot(msg_received, selectedVector)
 
-# normalized
-msgNormalized = normalized(msgReceived)
-# Covariance matrix
-covMatrix = np.cov(msgNormalized)
-print(covMatrix)
-# 提取前n个特征值特征向量
-eigVal, eigVector = np.linalg.eig(covMatrix)
-sortList = np.argsort(eigVal)
-print(sortList[selected])
-selectedVector = eigVector[:, sortList[selected]]
-# 产生主成分结果
-primalComp = np.dot(msgReceived, selectedVector)
+    # PCA by sklearn
+    # pca = PCA(n_components=2)
+    # fitResult = pca.fit_transform(msg_received)
+    # fitResult = np.array(fitResult, dtype=np.float16)
+    # print(fitResult)
