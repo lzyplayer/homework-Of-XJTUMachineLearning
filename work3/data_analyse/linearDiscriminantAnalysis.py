@@ -3,23 +3,14 @@
 # @Author   : vickylzy
 
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
-from sklearn import datasets
-import readDataClass
+
 import numpy as np
 
-# iris = datasets.load_iris()
-#
-# X = iris.data
-# y = iris.target
-lda = LinearDiscriminantAnalysis(n_components=2)
-# result = lda.fit_transform(X,y)
 
-msg = readDataClass.read_data_class('./data_analyse/data_class1.txt')
-# msg = np.array(msg, dtype=np.float64)
-target1 = np.ones([256, 1])
-target2 = np.zeros([768, 1])
-target = np.append(target1, target2)
-
-result = lda.fit_transform(msg, target)
-
-type(msg)
+# para: msg: shape=(a,b)
+def lin_dis_ana(msg):
+    lda = LinearDiscriminantAnalysis(n_components=2)
+    target = np.zeros((1024,))  # shape=(a,1)
+    for i in range(0, 1024):
+        target[i] = i % 4
+    return lda.fit_transform(msg, target)  # shape=(a,2)

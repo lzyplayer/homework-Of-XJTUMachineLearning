@@ -36,12 +36,75 @@
    C 对矩阵$S_{{}_{xx}}^{ - 1}S{}_{xy}S_{{}_{yy}}^{ - 1}S{}_{yx}$, $S_{{}_{yy}}^{ - 1}S{}_{yx}S_{{}_{xx}}^{ - 1}S{}_{xy}$进行(奇异值分解)
    A 由特征值计算X和Y的线性系数向量w和v
 
-4. ##### 1
+4. ##### PCA
 
-5. ##### 1
+   ```python
+   # -*- coding: utf-8 -*-
+   # @Time     : 2018/10/10 9:47
+   # @Author   : vickylzy
+   import numpy as np
+   
+   
+   def normalized(msg):
+       dataNormed = (msg - msg.mean(0)) / msg.std(0)
+       return dataNormed
+   
+   
+   # @para msg_received: shape(a,b)
+   # @para keep 保留维度数量
+   def pri_com_ana(msg_received, keep):
+       component = keep
+       selected = range(-component, 0)  # 降维保留的维度
+   
+       # normalized
+       msgNormalized = normalized(msg_received)  # shape = (a, b)
+       # Covariance matrix
+       covMatrix = np.cov(msgNormalized.T)  # shape = (b, b)
+       print(covMatrix)
+       # 提取前n个特征值特征向量
+       eigVal, eigVector = np.linalg.eig(covMatrix)  # eigVal.shape = （b,1） eigVector.shape = (b,b)
+       sortList = np.argsort(eigVal)
+       print(sortList[selected])
+       selectedVector = eigVector[:, sortList[selected]]  # selectedVector.shape=(b,keep)
+       # 产生主成分结果
+       return np.dot(msg_received, selectedVector)  # shape = (a, keep)
+   
+   ```
 
-6. ##### 1
+   
 
-7. ##### 1
+5. ##### LDA
 
-8. ##### 1
+   ```python
+   from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+   
+   import numpy as np
+   
+   
+   # para: msg: shape=(a,b)
+   def lin_dis_ana(msg):
+       lda = LinearDiscriminantAnalysis(n_components=2)
+       target = np.zeros((1024,))  # shape=(a,1)
+       for i in range(0, 1024):
+           target[i] = i % 4
+       return lda.fit_transform(msg, target)  # shape=(a,2)
+   ```
+
+   
+
+6. ##### CCA
+
+   ```python
+   from sklearn.cross_decomposition import CCA
+   
+   
+   def can_cor_ana(msg1, msg2):
+       cca = CCA(n_components=1)
+       cca.fit(msg1, msg2)
+       w, v = cca.transform(msg1, msg2)
+       return w, v
+   ```
+
+   
+
+   
